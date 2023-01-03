@@ -1,14 +1,12 @@
 const fs = require('fs');
 const readline = require('readline');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
 
-dotenv.config();
 
-const connectDB = async () => {
+const connectDB = async (MONGO_URI) => {
     try {
 
-        await mongoose.connect(process.env.MONGO_URI);
+        await mongoose.connect(MONGO_URI);
         console.log('DB CONNECTED');
         return;
 
@@ -30,11 +28,18 @@ const insertMedicine = async (Model) => {
                 quantity = parseInt(quantity);
                 freeSale = (freeSale === 'true');
                 medicines.push({ name, expiredDate, freeSale, quantity });
+                
         })
 
         file.on("close", async () => {
-                await Model.insertMany(medicines);
-                console.log('completado');
+                try {
+                        await Model.insertMany(medicines);
+                        console.log('completado');
+                }catch(err){
+                        console.log('error');
+                        console.log(err);
+                }
+                
         })
 }
 
